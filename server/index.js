@@ -16,14 +16,13 @@ const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
 wss.on('connection', (ws) => {
-console.log(wss.clients.size);
+    console.log('Number of connections:', wss.clients.size);
     //connection is up, let's add a simple simple event
     ws.on('message', (message) => {
-
-console.log(wss.clients.size);
+        console.log(wss.clients.size);
         //log the received message and send it back to the client
         console.log('received: %s', message);
-        ws.send(`Hello, you sent -> ${message}`);
+        ws.send(`You sent -> ${message}`);
     });
     //send immediatly a feedback to the incoming connection    
     ws.send('Hi there, I am a WebSocket server');
