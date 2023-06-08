@@ -1,5 +1,5 @@
 import React from "react";
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 
 export const ReactUseWebSocketExample = () => {
   const [showSubscribers, setShowSubscribers] = React.useState(true);

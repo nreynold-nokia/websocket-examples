@@ -19,6 +19,12 @@ wss.on('connection', (ws) => {
     console.log('Number of connections:', wss.clients.size);
     //connection is up, let's add a simple simple event
     ws.on('message', (message) => {
+            wss.clients
+                .forEach(client => {
+                    if (client != ws) {
+                        client.send(`Broadcasting message -> ${message}`);
+                    }    
+                });
         console.log(wss.clients.size);
         //log the received message and send it back to the client
         console.log('received: %s', message);
