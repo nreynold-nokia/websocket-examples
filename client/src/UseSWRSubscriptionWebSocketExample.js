@@ -20,33 +20,42 @@ export const UseSWRSubscriptionWebSocketExample = () => {
 
 const Sender = () => {
   const [messageText, setMessageText] = React.useState('')
-  const {send} = useWsSub('ws://localost:3001')
+  const subResp = useWsSub('ws://localhost:3001')
+  console.log('subresp sender');
+  console.log(subResp);
   return (
     <div>
       <input type='text' value={messageText}onChange={(e) => setMessageText(e.target.value)} />
-      <button onClick={ ()=> send(`${messageText} from react-use-websocket`) }>Send</button>
+      <button onClick={ () => {
+        console.log(subResp)
+        if(subResp && subResp.data && subResp.data.socket) {
+          console.log('sending'); 
+          subResp.data.socket.send(`${messageText} from react-use-websocket`)} }
+        }>Send</button>
     </div>
   )
 }
 
 export const Receiver = () => {
-  const {data, error, send} = useWsSub('ws://localhost:3001');
-  return (<div>{data}</div>)
+  const subResp = useWsSub('ws://localhost:3001');
+  console.log('subresp receiver')
+  console.log(subResp)
+  return (<div>{subResp.data && subResp.data.message}</div>)
 }
 
 const useWsSub = (key) => {
-  const socket = new WebSocket(key);
-  const send = socket.send;
   const subscribe = (key, {next}) => {
-    socket.addEventListener('message', (event) => next(null, event.data))
-    socket.addEventListener('open', (event) => next(null, event.data))
+
+    const socket = new WebSocket(key);
+    socket.addEventListener('message', (event) => next(null, {message: event.data || '', socket: socket}))
+    socket.addEventListener('open', (event) => next(null, {message: event.data || '', socket: socket}))
     socket.addEventListener('error', (event) => next(event.error))
     return () => socket.close()
+
   }
   const { data, error } = useSWRSubscription(key, subscribe);
   return {
     data,
     error,
-    send
   }
 }
